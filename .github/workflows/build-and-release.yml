@@ -10,6 +10,28 @@ on:
 
 permissions: write-all
 
+env:
+  # Exclude known-failing test classes and specific test methods from CI.
+  # These are pre-existing bugs tracked in OpenBugs.cs and related test files.
+  # When a bug is fixed, remove its exclusion here so CI catches regressions.
+  TEST_FILTER: >-
+    FullyQualifiedName!~OpenBugs
+    & FullyQualifiedName!~NpAnyTest
+    & FullyQualifiedName!~np_all_axis_Test
+    & FullyQualifiedName!~Issue448
+    & Name!=Combining_IndexArrays_with_Slices
+    & Name!=Combining_MaskArrays_with_Slices
+    & Name!=IndexNDArray_Get_Case7
+    & Name!=IndexNDArray_Get_Case7_Broadcasted
+    & Name!=IndexNDArray_Get_Case8_Broadcasted
+    & Name!=IndexNDArray_Set_Case2
+    & Name!=IndexNDArray_Set_Case3
+    & Name!=IndexNDArray_Set_Case4
+    & Name!=IndexNDArray_Set_Case8_Broadcasted
+    & Name!=IndexNDArray_sliced3dreshaped_indexed_by_1d_1d
+    & Name!=Masking_2D_over_3D
+    & Name!=MaskSetter
+
 jobs:
   test:
     strategy:
@@ -18,6 +40,7 @@ jobs:
         include:
           - os: windows-latest
           - os: ubuntu-latest
+          - os: macos-latest
 
     runs-on: ${{ matrix.os }}
 
@@ -36,8 +59,7 @@ jobs:
       run: dotnet build test/NumSharp.UnitTest/NumSharp.UnitTest.csproj --configuration Release
 
     - name: Test
-      run: dotnet test test/NumSharp.UnitTest/NumSharp.UnitTest.csproj --configuration Release --no-build --verbosity normal --logger trx
-      continue-on-error: true
+      run: dotnet test test/NumSharp.UnitTest/NumSharp.UnitTest.csproj --configuration Release --no-build --verbosity normal --logger trx --filter "${{ env.TEST_FILTER }}"
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v4

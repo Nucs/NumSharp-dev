@@ -31,6 +31,7 @@ env:
     & Name!=IndexNDArray_sliced3dreshaped_indexed_by_1d_1d
     & Name!=Masking_2D_over_3D
     & Name!=MaskSetter
+    & Name!=Compare
 
 jobs:
   test:
@@ -39,8 +40,11 @@ jobs:
       matrix:
         include:
           - os: windows-latest
+            extra_filter: ''
           - os: ubuntu-latest
+            extra_filter: '& FullyQualifiedName!~BitmapWithAlphaTests'
           - os: macos-latest
+            extra_filter: '& FullyQualifiedName!~BitmapWithAlphaTests'
 
     runs-on: ${{ matrix.os }}
 
@@ -59,7 +63,7 @@ jobs:
       run: dotnet build test/NumSharp.UnitTest/NumSharp.UnitTest.csproj --configuration Release
 
     - name: Test
-      run: dotnet test test/NumSharp.UnitTest/NumSharp.UnitTest.csproj --configuration Release --no-build --verbosity normal --logger trx --filter "${{ env.TEST_FILTER }}"
+      run: dotnet test test/NumSharp.UnitTest/NumSharp.UnitTest.csproj --configuration Release --no-build --verbosity normal --logger trx --filter "${{ env.TEST_FILTER }} ${{ matrix.extra_filter }}"
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v4

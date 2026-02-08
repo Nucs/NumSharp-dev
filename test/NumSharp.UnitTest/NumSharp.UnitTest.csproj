@@ -38,6 +38,7 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="OpenCover" Version="4.7.922" />
     <!-- System.Memory and System.Runtime.CompilerServices.Unsafe are built into net8.0+ -->
+  <!-- CI PR trigger test: this comment is harmless -->
   </ItemGroup>
 
   <ItemGroup>
